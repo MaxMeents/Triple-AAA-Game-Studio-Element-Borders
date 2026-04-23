@@ -6,7 +6,9 @@
    - Names for id N come from BORDER_EFFECTS[N-1] OR FX_META[N].name.
    - Effects 1..50 are CSS-only (classes .b01..b50).
    - Effects 51+ are canvas-driven and registered with window.TRAIL.
-   - Canvases attach only when their page is active, detach on leave.
+   - Only the active page's cards exist in the DOM. Switching pages
+     destroys the old cards and builds just the new page's 50. This
+     keeps DOM cost, CSS animation cost, and canvas count flat.
    ============================================================= */
 (function () {
   const grid = document.getElementById("grid");
@@ -28,22 +30,15 @@
   function pageOf(idx)   { return Math.ceil(idx / PAGE_SIZE); }
   const numPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  // ---- Build cards -------------------------------------------------
-  const cards = []; // { idx, el, sq, page }
+  // ---- Lightweight specs (no DOM) ---------------------------------
+  const specs = []; // { idx, name, page, isCanvas }
   for (let idx = 1; idx <= total; idx++) {
-    const pad = String(idx).padStart(2, "0");
-    const node = tpl.content.firstElementChild.cloneNode(true);
-    const sq = node.querySelector(".square");
-    sq.classList.add("b" + pad);
-    const isCanvas = idx > CSS_RANGE[1];
-    if (isCanvas) sq.classList.add("trail");
-    node.querySelector(".num").textContent = "#" + pad;
-    const nm = nameFor(idx);
-    node.querySelector(".name").textContent = nm;
-    node.dataset.name = nm.toLowerCase();
-    node.dataset.page = pageOf(idx);
-    grid.appendChild(node);
-    cards.push({ idx, el: node, sq, page: pageOf(idx), isCanvas });
+    specs.push({
+      idx,
+      name: nameFor(idx),
+      page: pageOf(idx),
+      isCanvas: idx > CSS_RANGE[1],
+    });
   }
 
   // ---- Nav bar -----------------------------------------------------
@@ -74,32 +69,70 @@
 
   document.body.insertBefore(nav, document.body.firstChild);
 
-  // ---- Paging: lazy attach/detach canvases ------------------------
-  let currentPage = 1;
+  // ---- Build / tear down cards per page ---------------------------
+  let currentPage = 0;           // 0 = uninitialized
+  let liveCards = [];            // currently mounted { spec, el, sq }
+  let currentQuery = "";
+
+  function buildCard(spec) {
+    const pad = String(spec.idx).padStart(2, "0");
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    const sq = node.querySelector(".square");
+    sq.classList.add("b" + pad);
+    if (spec.isCanvas) sq.classList.add("trail");
+    node.querySelector(".num").textContent = "#" + pad;
+    node.querySelector(".name").textContent = spec.name;
+    node.dataset.name = spec.name.toLowerCase();
+    node.dataset.page = spec.page;
+    return { spec, el: node, sq };
+  }
+
+  function teardownPage() {
+    // Detach canvases first so the TRAIL engine releases resources
+    if (window.TRAIL) {
+      for (const c of liveCards) {
+        if (c.spec.isCanvas && window.TRAIL.isAttached(c.sq)) window.TRAIL.detach(c.sq);
+      }
+    }
+    // Then remove DOM
+    for (const c of liveCards) {
+      if (c.el.parentNode) c.el.parentNode.removeChild(c.el);
+    }
+    liveCards = [];
+  }
+
   function showPage(p) {
+    if (p === currentPage) return;
+    teardownPage();
     currentPage = p;
     tabs.forEach(t => t.classList.toggle("active", +t.dataset.page === p));
-    const shouldBeAttached = new Set();
 
-    for (const c of cards) {
-      const onPage = c.page === p;
-      c.el.classList.toggle("page-hidden", !onPage);
-      if (onPage && c.isCanvas) shouldBeAttached.add(c);
+    // Build only the 50 cards for this page, in one DocumentFragment for speed.
+    const frag = document.createDocumentFragment();
+    for (const spec of specs) {
+      if (spec.page !== p) continue;
+      const card = buildCard(spec);
+      frag.appendChild(card.el);
+      liveCards.push(card);
+    }
+    grid.appendChild(frag);
+
+    // Apply any active search query immediately to the fresh cards
+    applyFilter(currentQuery);
+
+    // Attach canvas effects only for visible, on-page, canvas cards
+    if (window.TRAIL) {
+      for (const c of liveCards) {
+        if (!c.spec.isCanvas) continue;
+        if (c.el.classList.contains("page-hidden")) continue;
+        if (window.TRAIL.has(c.spec.idx)) window.TRAIL.attach(c.sq, c.spec.idx);
+      }
     }
 
-    if (window.TRAIL) {
-      // Detach cards on other pages
-      for (const c of cards) {
-        if (c.isCanvas && c.page !== p && window.TRAIL.isAttached(c.sq)) {
-          window.TRAIL.detach(c.sq);
-        }
-      }
-      // Attach cards on current page
-      for (const c of shouldBeAttached) {
-        if (!window.TRAIL.isAttached(c.sq) && window.TRAIL.has(c.idx)) {
-          window.TRAIL.attach(c.sq, c.idx);
-        }
-      }
+    // Page-1 one-off: enhance Stardust Trail (#44) with its custom overlay
+    if (p === 1) {
+      const stardust = grid.querySelector(".b44");
+      if (stardust && !stardust._stardustDone) { stardust._stardustDone = true; attachStardust(stardust); }
     }
 
     // Scroll to top of grid on page change
@@ -107,26 +140,33 @@
     if (r.top < 0) window.scrollTo({ top: Math.max(0, window.scrollY + r.top - 80), behavior: "smooth" });
   }
 
+  function applyFilter(q) {
+    for (const c of liveCards) {
+      const matches = !q || c.spec.name.toLowerCase().includes(q);
+      c.el.classList.toggle("page-hidden", !matches);
+    }
+  }
+
   // ---- Filter ------------------------------------------------------
   if (search) {
     search.addEventListener("input", (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      // Search is scoped to the current page so canvas attach/detach stays coherent.
-      grid.querySelectorAll(".card").forEach((c) => {
-        const pageOk = +c.dataset.page === currentPage;
-        const matches = !q || c.dataset.name.includes(q);
-        c.classList.toggle("page-hidden", !(pageOk && matches));
-      });
+      currentQuery = e.target.value.trim().toLowerCase();
+      applyFilter(currentQuery);
+      // Detach canvases that just got hidden and attach ones that re-appeared
+      if (window.TRAIL) {
+        for (const c of liveCards) {
+          if (!c.spec.isCanvas) continue;
+          const hidden = c.el.classList.contains("page-hidden");
+          const attached = window.TRAIL.isAttached(c.sq);
+          if (hidden && attached) window.TRAIL.detach(c.sq);
+          else if (!hidden && !attached && window.TRAIL.has(c.spec.idx)) window.TRAIL.attach(c.sq, c.spec.idx);
+        }
+      }
     });
   }
 
   // ---- Initial page ------------------------------------------------
   showPage(1);
-
-  // ---- Canvas particle overlay for Stardust Trail (#44) -----------
-  // Enhances the CSS fallback with real particle physics.
-  const stardustSquare = grid.querySelector(".b44");
-  if (stardustSquare) attachStardust(stardustSquare);
 
   function attachStardust(host) {
     const canvas = document.createElement("canvas");
