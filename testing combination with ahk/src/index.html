@@ -42,10 +42,20 @@
 <script src="js/trail.js"></script>
 <script src="js/trail-ring.js"></script>
 
-<!-- FX-ENGINE v2 — single-file build (concatenation of js/fx/*.js).
-     Swap back to the individual modules for development; this single
-     file is what ships to end users. -->
-<script src="Max_FX_Engine.js"></script>
+<!-- FX-ENGINE v2 (modular) — load order matters -->
+<script src="js/fx/core.js"></script>
+<script src="js/fx/noise.js"></script>
+<script src="js/fx/palettes.js"></script>
+<script src="js/fx/geometry.js"></script>
+<script src="js/fx/pool.js"></script>
+<script src="js/fx/tracks.js"></script>
+<script src="js/fx/forces.js"></script>
+<script src="js/fx/shapes.js"></script>
+<script src="js/fx/border.js"></script>
+<script src="js/fx/emitter.js"></script>
+<script src="js/fx/presets.js"></script>
+<script src="js/fx/engine.js"></script>
+<script src="js/fx/devtools.js"></script>
 
 <!-- Effect catalogues.  Page 1 (1-50) is CSS-rendered via the
      borders-*.css files; pages 2-7 are FX-engine-fueled. -->

@@ -1,0 +1,61 @@
+/* ==================================================================
+   BORDERS 101–150 — Whole-perimeter "everywhere at once" trail FX
+   These reuse the .trail chrome from borders-51-100.css. Per-effect
+   panel tints below just pick a background that complements each FX.
+   ================================================================== */
+
+/* Warm fire / ember / lava tones */
+.b102 .inner,.b103 .inner,.b116 .inner,.b138 .inner,.b142 .inner,.b143 .inner{
+  background:linear-gradient(160deg,#120705,#1c0d08);
+}
+
+/* Cool ice / water / moon tones */
+.b105 .inner,.b106 .inner,.b114 .inner,.b140 .inner,.b149 .inner{
+  background:linear-gradient(160deg,#05101a,#0a1a2a);
+}
+.b115 .inner{ background:linear-gradient(160deg,#061018,#0a1c26); }
+
+/* Electric / plasma / cosmic */
+.b104 .inner,.b109 .inner,.b117 .inner,.b123 .inner,.b132 .inner,.b134 .inner,.b150 .inner{
+  background:linear-gradient(160deg,#05070e,#0c1228);
+}
+
+/* Magic / void / nebula */
+.b118 .inner,.b124 .inner,.b127 .inner,.b144 .inner,.b145 .inner{
+  background:linear-gradient(160deg,#0a0512,#13092a);
+}
+
+/* Nature / forest */
+.b119 .inner,.b148 .inner,.b139 .inner,.b130 .inner{
+  background:linear-gradient(160deg,#05120a,#081f12);
+}
+
+/* Gold / radiant */
+.b126 .inner,.b129 .inner{ background:linear-gradient(160deg,#120d02,#1c1504); }
+
+/* Blood / heart */
+.b131 .inner,.b146 .inner{ background:linear-gradient(160deg,#140305,#200508); }
+
+/* Sand / ash */
+.b121 .inner,.b122 .inner,.b141 .inner{ background:linear-gradient(160deg,#0c0a08,#161310); }
+
+/* Effects that need normal blending (paint, pixel, leaf, petal, feather, confetti, honey) */
+.b119 canvas.trail-fx,
+.b120 canvas.trail-fx,
+.b133 canvas.trail-fx,
+.b137 canvas.trail-fx,
+.b138 canvas.trail-fx,
+.b147 canvas.trail-fx,
+.b148 canvas.trail-fx{
+  mix-blend-mode:normal;
+}
+
+/* Keep meteor / lightning / sparkle on screen blend for bright streaks */
+.b101 canvas.trail-fx,
+.b104 canvas.trail-fx,
+.b117 canvas.trail-fx,
+.b125 canvas.trail-fx,
+.b134 canvas.trail-fx,
+.b142 canvas.trail-fx{
+  mix-blend-mode:screen;
+}

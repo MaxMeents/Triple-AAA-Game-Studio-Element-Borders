@@ -1,0 +1,105 @@
+/* ==============================================
+   BORDERS 11–20
+   ============================================== */
+
+/* 11 — Electric Storm (jittering bolts) */
+.b11{ border:2px solid #bff3ff; box-shadow:0 0 20px #7cf6ff, inset 0 0 14px rgba(124,246,255,.6); animation:b11 .15s steps(2) infinite; }
+@keyframes b11{
+  0%  { transform:translate(0,0) }
+  25% { transform:translate(.6px,-.6px) }
+  50% { transform:translate(-.6px,.6px); filter:brightness(1.6) }
+  75% { transform:translate(.6px,.6px) }
+  100%{ transform:translate(0,0) }
+}
+
+/* 12 — Shadow Realm (dark mist seep) */
+.b12{ border:2px solid #161824; position:relative; overflow:hidden; }
+.b12::before{
+  content:""; position:absolute; inset:-40%; border-radius:inherit;
+  background:radial-gradient(closest-side, rgba(120,60,200,.55), transparent 70%);
+  filter:blur(14px); animation:b12 6s linear infinite;
+}
+@keyframes b12{ 0%{transform:translate(-20%,-20%) rotate(0)} 100%{transform:translate(20%,20%) rotate(360deg)} }
+
+/* 13 — Phoenix Rising (ember rise) */
+.b13{ position:relative; border:2px solid #6b1a00; box-shadow:0 0 20px #ff5a00, inset 0 0 18px rgba(255,120,0,.5); }
+.b13::after{
+  content:""; position:absolute; inset:-6px -2px -2px -2px; border-radius:inherit; pointer-events:none;
+  background:
+    radial-gradient(3px 3px at 10% 100%, #ffb347, transparent 60%),
+    radial-gradient(2px 2px at 25% 100%, #ff7a00, transparent 60%),
+    radial-gradient(3px 3px at 45% 100%, #ffd27a, transparent 60%),
+    radial-gradient(2px 2px at 65% 100%, #ff7a00, transparent 60%),
+    radial-gradient(3px 3px at 85% 100%, #ffb347, transparent 60%);
+  animation:b13 2s linear infinite;
+}
+@keyframes b13{ 0%{transform:translateY(0);opacity:.2} 50%{opacity:1} 100%{transform:translateY(-24px);opacity:0} }
+
+/* 14 — Nebula Dust */
+.b14{ position:relative; }
+.b14::before{
+  content:""; position:absolute; inset:-3px; border-radius:inherit; padding:3px;
+  background:conic-gradient(from var(--angle),#3a2a7c,#ff5ea8,#6fe0ff,#9b5cff,#3a2a7c);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  filter:blur(.3px) drop-shadow(0 0 8px #9b5cff);
+  animation:spin-angle 8s linear infinite;
+}
+
+/* 15 — Energy Shield (hex scan) */
+.b15{ border:2px solid #66ffd1; box-shadow:0 0 16px #66ffd1, inset 0 0 18px rgba(102,255,209,.35); position:relative; overflow:hidden; }
+.b15::before{
+  content:""; position:absolute; left:-50%; right:-50%; top:-2px; height:6px;
+  background:linear-gradient(90deg,transparent,#b6fff0,transparent);
+  animation:b15 2.2s linear infinite;
+}
+@keyframes b15{ 0%{transform:translateY(0)} 100%{transform:translateY(var(--sq))} }
+
+/* 16 — Chromatic Pulse (RGB split) */
+.b16{ position:relative; border:2px solid #fff; }
+.b16{ box-shadow:
+  -4px 0 0 #ff2a6d, 4px 0 0 #05d9e8, 0 -4px 0 #ff2a6d, 0 4px 0 #05d9e8,
+  0 0 18px rgba(255,255,255,.25);
+  animation:b16 1.4s ease-in-out infinite; }
+@keyframes b16{ 0%,100%{filter:none} 50%{filter:blur(.6px) saturate(1.6)} }
+
+/* 17 — Runic Seal (etched glow) */
+.b17{ border:3px double #d9b26a; box-shadow:0 0 18px rgba(217,178,106,.55), inset 0 0 14px rgba(217,178,106,.35); position:relative; }
+.b17::before{
+  content:""; position:absolute; inset:4px; border:1px solid rgba(217,178,106,.5); border-radius:calc(var(--radius) - 6px);
+  animation:pulse-op 2.4s ease-in-out infinite;
+}
+
+/* 18 — Laser Grid */
+.b18{ position:relative; border:1px solid rgba(0,255,170,.4); box-shadow:0 0 14px rgba(0,255,170,.45); }
+.b18::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(0,255,170,.5) 1px, transparent 1px) 0 0/20px 100%,
+    linear-gradient(0deg,  rgba(0,255,170,.5) 1px, transparent 1px) 0 0/100% 20px;
+  mask:linear-gradient(#000,#000);
+  animation:b18 2s linear infinite;
+}
+@keyframes b18{ to{ background-position:20px 0, 0 20px; } }
+
+/* 19 — Toxic Sludge (bubbling acid) */
+.b19{ border:2px solid #7dff2a; box-shadow:0 0 18px #7dff2a, inset 0 0 16px rgba(125,255,42,.4); position:relative; }
+.b19::after{
+  content:""; position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
+  background:
+    radial-gradient(6px 6px at 20% 100%, #d7ff7d, transparent 60%),
+    radial-gradient(5px 5px at 50% 100%, #a8ff5e, transparent 60%),
+    radial-gradient(7px 7px at 80% 100%, #7dff2a, transparent 60%);
+  animation:b19 2.6s ease-in-out infinite;
+}
+@keyframes b19{ 0%{transform:translateY(0);opacity:.2} 50%{opacity:.9} 100%{transform:translateY(-18px);opacity:0} }
+
+/* 20 — Celestial Aura (halo rings) */
+.b20{ position:relative; border:1px solid #fff8c4; box-shadow:0 0 18px #fff0a0, inset 0 0 12px rgba(255,240,160,.45); }
+.b20::before,.b20::after{
+  content:""; position:absolute; inset:-6px; border-radius:inherit; border:1px solid rgba(255,240,160,.6); pointer-events:none;
+  animation:b20 2.8s ease-out infinite;
+}
+.b20::after{ animation-delay:1.4s; }
+@keyframes b20{ 0%{transform:scale(1);opacity:.9} 100%{transform:scale(1.25);opacity:0} }
