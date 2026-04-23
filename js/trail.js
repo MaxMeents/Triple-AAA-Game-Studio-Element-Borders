@@ -1111,7 +1111,9 @@
     last = now;
     for (const rec of active) {
       if (!rec.visible) continue;
-      rec.ctx.clearRect(0, 0, rec.W, rec.H);
+      // Effects that self-manage their canvas (e.g. FX v2 with trail fade)
+      // opt out of the default clearRect by setting fx.clearsSelf = true.
+      if (!rec.fx.clearsSelf) rec.ctx.clearRect(0, 0, rec.W, rec.H);
       rec.fx.step(dt, rec.W, rec.H);
       rec.fx.draw(rec.ctx, rec.W, rec.H);
     }

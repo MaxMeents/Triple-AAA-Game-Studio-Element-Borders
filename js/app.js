@@ -18,7 +18,9 @@
   const meta  = window.FX_META || {};
 
   const PAGE_SIZE = 50;
-  const CSS_RANGE = [1, 50];   // effects that are pure CSS classes
+  // Effects 1-50 are rendered by the original CSS classes (see
+  // css/borders-*.css).  Effects 51+ are engine-fueled canvas.
+  const CSS_RANGE = [1, 50];
 
   // ---- Figure out total effect count -------------------------------
   let total = names.length;
@@ -37,7 +39,7 @@
       idx,
       name: nameFor(idx),
       page: pageOf(idx),
-      isCanvas: idx > CSS_RANGE[1],
+      isCanvas: idx > CSS_RANGE[1],   // ids 1-50 are CSS-rendered
     });
   }
 
@@ -78,8 +80,8 @@
     const pad = String(spec.idx).padStart(2, "0");
     const node = tpl.content.firstElementChild.cloneNode(true);
     const sq = node.querySelector(".square");
-    sq.classList.add("b" + pad);
-    if (spec.isCanvas) sq.classList.add("trail");
+    sq.classList.add("b" + pad);                  // CSS hook for ids 1-50
+    if (spec.isCanvas) sq.classList.add("trail"); // canvas-host for 51+
     node.querySelector(".num").textContent = "#" + pad;
     node.querySelector(".name").textContent = spec.name;
     node.dataset.name = spec.name.toLowerCase();
@@ -129,12 +131,6 @@
       }
     }
 
-    // Page-1 one-off: enhance Stardust Trail (#44) with its custom overlay
-    if (p === 1) {
-      const stardust = grid.querySelector(".b44");
-      if (stardust && !stardust._stardustDone) { stardust._stardustDone = true; attachStardust(stardust); }
-    }
-
     // Scroll to top of grid on page change
     const r = grid.getBoundingClientRect();
     if (r.top < 0) window.scrollTo({ top: Math.max(0, window.scrollY + r.top - 80), behavior: "smooth" });
@@ -167,68 +163,4 @@
 
   // ---- Initial page ------------------------------------------------
   showPage(1);
-
-  function attachStardust(host) {
-    const canvas = document.createElement("canvas");
-    canvas.style.cssText =
-      "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;border-radius:inherit;z-index:2;";
-    host.appendChild(canvas);
-    const ctx = canvas.getContext("2d");
-    let W, H, particles;
-
-    function resize() {
-      const r = host.getBoundingClientRect();
-      canvas.width = r.width * devicePixelRatio;
-      canvas.height = r.height * devicePixelRatio;
-      W = r.width; H = r.height;
-      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    }
-    resize();
-    window.addEventListener("resize", resize);
-
-    // Particles travel along the perimeter.
-    particles = Array.from({ length: 26 }, () => spawn());
-
-    function spawn() {
-      return {
-        t: Math.random(),               // 0..1 around perimeter
-        speed: 0.0008 + Math.random() * 0.0016,
-        size: 0.6 + Math.random() * 1.6,
-        hue: 190 + Math.random() * 140, // cool range
-        life: 0.6 + Math.random() * 0.4,
-      };
-    }
-
-    function perimeterPoint(t) {
-      // Map 0..1 around a rounded rect perimeter approximated as a rect.
-      const p = (W + H) * 2;
-      let d = t * p;
-      if (d < W)                   return { x: d,           y: 0 };
-      d -= W;
-      if (d < H)                   return { x: W,           y: d };
-      d -= H;
-      if (d < W)                   return { x: W - d,       y: H };
-      d -= W;
-      return { x: 0, y: H - d };
-    }
-
-    function tick() {
-      ctx.clearRect(0, 0, W, H);
-      ctx.globalCompositeOperation = "lighter";
-      particles.forEach((p) => {
-        p.t = (p.t + p.speed) % 1;
-        const { x, y } = perimeterPoint(p.t);
-        const r = p.size;
-        const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 6);
-        grd.addColorStop(0, `hsla(${p.hue},100%,85%,${p.life})`);
-        grd.addColorStop(1, "hsla(0,0%,100%,0)");
-        ctx.fillStyle = grd;
-        ctx.beginPath();
-        ctx.arc(x, y, r * 6, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      requestAnimationFrame(tick);
-    }
-    tick();
-  }
 })();
