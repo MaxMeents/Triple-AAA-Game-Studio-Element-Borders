@@ -389,16 +389,16 @@
     requestAnimationFrame(() => {
       if (meta && meta.cfg) {
         ui.hint.textContent = "live preview · engine";
-        openCanvasMode(ui, preview, meta);
+        openCanvasMode(ui, preview, meta, name);
       } else {
         ui.hint.textContent = "live preview · css";
-        openCssMode(ui, id);
+        openCssMode(ui, id, name);
       }
     });
   }
 
   // ---------- CANVAS mode (FX-engine-fueled effects) ----------
-  function openCanvasMode(ui, preview, meta) {
+  function openCanvasMode(ui, preview, meta, name) {
     ui.canvas.classList.remove("hidden");
     preview.resize();
     preview.start();
@@ -428,25 +428,48 @@
 
     ui.btnCopy.disabled = false;
     ui.btnReset.disabled = false;
+    ui.btnCopy.textContent = "Copy Standalone JS";
+
+    // Code-preview panel appended below the slider sections.
+    const codePanel = buildCodePanel(ui);
+    function refreshCode() {
+      if (!window.FX_EXPORT) return;
+      const slug = window.FX_EXPORT.toSlug(name);
+      const fn   = window.FX_EXPORT.toFuncName(name);
+      codePanel.classSpan.textContent = "fx-" + slug;
+      codePanel.fnSpan.textContent    = fn + "()";
+      codePanel.code.textContent      = window.FX_EXPORT.standalone(name, liveCfg);
+    }
+
+    function rebuildAll() { rebuild(); refreshCode(); }
 
     mountControls();
-    rebuild();
+    rebuildAll();
 
     ui.btnReset.onclick = () => {
       liveCfg = deepClone(baseCfg);
       mountControls();
-      rebuild();
+      rebuildAll();
     };
     ui.btnCopy.onclick = () => {
-      const text = JSON.stringify(liveCfg, null, 2);
-      navigator.clipboard.writeText(text).catch(() => {});
-      ui.btnCopy.textContent = "Copied!";
-      setTimeout(() => (ui.btnCopy.textContent = "Copy Config"), 1200);
+      if (!window.FX_EXPORT) return;
+      const code = window.FX_EXPORT.standalone(name, liveCfg);
+      navigator.clipboard.writeText(code).catch(() => {});
+      const slug = window.FX_EXPORT.toSlug(name);
+      ui.btnCopy.textContent = "Copied! Add class=\"fx-" + slug + "\"";
+      setTimeout(() => (ui.btnCopy.textContent = "Copy Standalone JS"), 2600);
     };
+
+    // Regenerate code on every slider input too:
+    ui.controls.addEventListener("input", refreshCode);
+
+    // Re-hook mountControls so subsequent control rebuilds also refresh code.
+    const origMount = mountControls;
+    mountControls = function () { origMount(); refreshCode(); };
   }
 
   // ---------- CSS mode (CSS-class-driven effects, ids 1-50) ----------
-  function openCssMode(ui, id) {
+  function openCssMode(ui, id, name) {
     const pad = String(id).padStart(2, "0");
     // Build a mini-card inside the CSS wrapper that shares the exact
     // same structure as the grid card, so `.bNN` + `.bNN .inner` styles
@@ -531,17 +554,67 @@
 
     ui.btnCopy.disabled = false;
     ui.btnReset.disabled = false;
+    ui.btnCopy.textContent = "Copy Standalone CSS";
+
+    const codePanel = buildCodePanel(ui);
+    function refreshCode() {
+      if (!window.FX_EXPORT) return;
+      const slug = window.FX_EXPORT.toSlug(name);
+      codePanel.classSpan.textContent = "fx-" + slug;
+      codePanel.fnSpan.textContent    = "(pure CSS)";
+      codePanel.code.textContent      = window.FX_EXPORT.standaloneCss(name, id, live);
+    }
+    refreshCode();
+
     ui.btnReset.onclick = () => {
       Object.assign(live, defaults);
-      // Re-render controls
-      openCssMode(ui, id);
+      openCssMode(ui, id, name);
     };
     ui.btnCopy.onclick = () => {
-      const out = "/* .b" + pad + " adjustments */\nfilter: " + ui.cssWrap.style.filter + ";\ntransform: " + ui.cssWrap.style.transform + ";";
-      navigator.clipboard.writeText(out).catch(() => {});
-      ui.btnCopy.textContent = "Copied!";
-      setTimeout(() => (ui.btnCopy.textContent = "Copy Config"), 1200);
+      if (!window.FX_EXPORT) return;
+      const code = window.FX_EXPORT.standaloneCss(name, id, live);
+      navigator.clipboard.writeText(code).catch(() => {});
+      const slug = window.FX_EXPORT.toSlug(name);
+      ui.btnCopy.textContent = "Copied! Add class=\"fx-" + slug + "\"";
+      setTimeout(() => (ui.btnCopy.textContent = "Copy Standalone CSS"), 2600);
     };
+
+    ui.controls.addEventListener("input", refreshCode);
+  }
+
+  // -----------------------------------------------------------------
+  //  Shared helper — builds a collapsible code-preview panel inside
+  //  the controls column.  Returns { classSpan, fnSpan, code } the
+  //  caller updates on every config change.
+  // -----------------------------------------------------------------
+  function buildCodePanel(ui) {
+    const section = el("section", { class: "fx-section fx-code-section" });
+    const h = el("h3");
+    h.textContent = "Generated standalone code";
+    section.append(h);
+
+    const usage = el("div", { class: "fx-code-usage" });
+    const classSpan = el("code", { class: "fx-code-class" });
+    classSpan.textContent = "fx-…";
+    const fnSpan = el("code", { class: "fx-code-fn" });
+    fnSpan.textContent = "Fn()";
+    usage.append(
+      document.createTextNode("Add "),
+      document.createTextNode("class=\""),
+      classSpan,
+      document.createTextNode("\""),
+      document.createTextNode(" to any element, then paste the snippet below. Function: "),
+      fnSpan,
+    );
+    section.append(usage);
+
+    const pre = el("pre", { class: "fx-code-pre" });
+    const code = el("code");
+    pre.append(code);
+    section.append(pre);
+
+    ui.controls.append(section);
+    return { section, classSpan, fnSpan, code };
   }
 
   function close(ui, preview) {

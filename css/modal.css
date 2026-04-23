@@ -260,6 +260,48 @@
   color: #ffffff;
 }
 
+/* -- Generated-code preview panel --------------------------------- */
+.fx-code-usage {
+  font-size: 12px;
+  color: #9ba8c6;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.fx-code-usage code {
+  background: rgba(124,246,255,.1);
+  border: 1px solid rgba(124,246,255,.25);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font: 600 11.5px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color: #bff4ff;
+}
+.fx-code-usage code.fx-code-fn {
+  background: rgba(180,139,255,.1);
+  border-color: rgba(180,139,255,.25);
+  color: #e0d1ff;
+}
+.fx-code-pre {
+  margin: 0;
+  max-height: 260px;
+  overflow: auto;
+  background: #05070e;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: 500 11.5px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color: #c7d4ef;
+  white-space: pre;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.15) transparent;
+}
+.fx-code-pre::-webkit-scrollbar { width: 6px; height: 6px; }
+.fx-code-pre::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 3px; }
+.fx-code-pre code {
+  display: block;
+  color: inherit;
+  font: inherit;
+}
+
 /* Cards become clickable */
 .card { cursor: pointer; }
 .card:hover .square { transform: translateZ(0) scale(1.015); transition: transform .15s ease; }
