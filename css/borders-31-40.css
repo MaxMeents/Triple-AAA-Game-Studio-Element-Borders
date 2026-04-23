@@ -1,0 +1,107 @@
+/* ==============================================
+   BORDERS 31–40
+   ============================================== */
+
+/* 31 — Starlight (twinkle dots) */
+.b31{ border:1px solid rgba(255,255,255,.25); box-shadow:inset 0 0 14px rgba(255,255,255,.08); position:relative; overflow:hidden; }
+.b31::before{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  background:
+    radial-gradient(1px 1px at 10% 20%, #fff 99%, transparent 100%),
+    radial-gradient(1px 1px at 25% 70%, #fff 99%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 15%, #fff 99%, transparent 100%),
+    radial-gradient(1px 1px at 80% 60%, #fff 99%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 85%, #fff 99%, transparent 100%),
+    radial-gradient(1px 1px at 92% 30%, #fff 99%, transparent 100%);
+  animation:b31 2.4s ease-in-out infinite alternate;
+}
+@keyframes b31{ 0%{opacity:.2;filter:blur(0)} 100%{opacity:1;filter:blur(.4px)} }
+
+/* 32 — Binary Stream */
+.b32{ position:relative; border:1px solid #00ff88; box-shadow:0 0 16px #00ff88; overflow:hidden; color:#00ff88; font:700 10px/1 monospace; }
+.b32::before{
+  content:"01001000 01010100 01000001 01001110 01000110 01010100 10101010 11001100 00110011";
+  position:absolute; inset:-2px; border-radius:inherit; padding:4px; letter-spacing:1px;
+  white-space:pre-wrap; word-break:break-all; opacity:.85; text-shadow:0 0 4px #00ff88;
+  animation:b32 4s linear infinite;
+}
+@keyframes b32{ 0%{transform:translateY(0)} 100%{transform:translateY(-24px)} }
+
+/* 33 — Blood Moon */
+.b33{ border:2px solid #2a0008; box-shadow:0 0 22px #ff1744, inset 0 0 14px rgba(255,23,68,.55); animation:b33 2.6s ease-in-out infinite; }
+@keyframes b33{ 0%,100%{box-shadow:0 0 14px #9e0022, inset 0 0 12px rgba(255,23,68,.35)} 50%{box-shadow:0 0 36px #ff1744, inset 0 0 22px rgba(255,23,68,.75)} }
+
+/* 34 — Venom Strike */
+.b34{ position:relative; border:2px solid #062a10; box-shadow:0 0 18px #21d07a, inset 0 0 12px rgba(33,208,122,.5); }
+.b34::before{
+  content:""; position:absolute; inset:-2px; border-radius:inherit; padding:2px;
+  background:conic-gradient(from var(--angle),#062a10,#21d07a 20%,#c6ff6a 30%,#21d07a 40%,#062a10 60%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  animation:spin-angle 2.4s linear infinite;
+}
+
+/* 35 — Ethereal Wisp */
+.b35{ position:relative; border:1px solid rgba(200,220,255,.35); box-shadow:inset 0 0 18px rgba(170,200,255,.3); overflow:hidden; }
+.b35::before{
+  content:""; position:absolute; inset:-40%; border-radius:50%;
+  background:radial-gradient(closest-side, rgba(190,210,255,.6), transparent 70%);
+  filter:blur(14px); animation:b35 7s ease-in-out infinite;
+}
+@keyframes b35{ 0%{transform:translate(-20%,-10%)} 50%{transform:translate(20%,10%)} 100%{transform:translate(-20%,-10%)} }
+
+/* 36 — Thunder Strike */
+.b36{ border:2px solid #e1f3ff; box-shadow:0 0 16px #bae0ff, inset 0 0 12px rgba(186,224,255,.4); animation:b36 4s linear infinite; }
+@keyframes b36{
+  0%,90%,100%{ filter:brightness(1); }
+  92% { filter:brightness(3) saturate(2); }
+  94% { filter:brightness(.7); }
+  96% { filter:brightness(2.5); }
+}
+
+/* 37 — Crystal Growth (animated facets) */
+.b37{ position:relative; border:2px solid #c8b6ff; box-shadow:0 0 18px #9a7bff, inset 0 0 14px rgba(200,182,255,.45); }
+.b37::before{
+  content:""; position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
+  background:
+    linear-gradient(60deg, transparent 46%, #e3d9ff 48%, transparent 52%),
+    linear-gradient(-60deg, transparent 46%, #c8b6ff 48%, transparent 52%);
+  background-size:18px 18px;
+  mix-blend-mode:screen; opacity:.7;
+  animation:b37 5s linear infinite;
+}
+@keyframes b37{ to{background-position:18px 0, -18px 0} }
+
+/* 38 — Smoke Veil */
+.b38{ position:relative; border:1px solid rgba(255,255,255,.15); box-shadow:inset 0 0 20px rgba(180,180,180,.3); overflow:hidden; }
+.b38::before{
+  content:""; position:absolute; inset:-50%; border-radius:50%;
+  background:radial-gradient(closest-side, rgba(200,200,210,.55), transparent 70%);
+  filter:blur(18px); animation:b38 9s linear infinite;
+}
+@keyframes b38{ 0%{transform:translate(-15%,-15%) rotate(0)} 100%{transform:translate(15%,15%) rotate(360deg)} }
+
+/* 39 — Prismatic Edge */
+.b39{ position:relative; }
+.b39::before{
+  content:""; position:absolute; inset:-3px; border-radius:inherit; padding:3px;
+  background:conic-gradient(from var(--angle),red,orange,yellow,lime,cyan,blue,magenta,red);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.4));
+  animation:spin-angle 4s linear infinite;
+}
+
+/* 40 — Stealth Cloak (invisible flicker) */
+.b40{ border:1px dashed rgba(255,255,255,.18); box-shadow:inset 0 0 14px rgba(255,255,255,.06); animation:b40 3s ease-in-out infinite; position:relative; }
+.b40::before{
+  content:""; position:absolute; inset:-1px; border-radius:inherit;
+  background:linear-gradient(120deg, transparent 40%, rgba(255,255,255,.35) 50%, transparent 60%);
+  background-size:250% 250%;
+  animation:b40b 3s linear infinite;
+  mix-blend-mode:screen; pointer-events:none;
+}
+@keyframes b40 { 0%,100%{opacity:.7} 50%{opacity:.25} }
+@keyframes b40b{ 0%{background-position:0 0} 100%{background-position:250% 250%} }
