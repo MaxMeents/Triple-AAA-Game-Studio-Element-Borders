@@ -63,6 +63,24 @@
     holy:      [45, 50, 55, 200],
     venom:     [80, 100, 120, 140],
     arcane:    [260, 280, 300, 200],
+    // v2.1 extension palettes
+    cyberpunk: [320, 290, 180, 50, 140],
+    sunset:    [0, 20, 40, 60, 300, 330],
+    midnight:  [220, 240, 260, 280, 260],
+    emerald:   [130, 150, 170, 190, 150],
+    abyss:     [200, 220, 240, 260, 250],
+    "sakura-deep":[320, 340, 350, 10],
+    neonpink:  [310, 320, 330, 340, 350],
+    electric:  [180, 200, 220, 240, 200],
+    infernal:  [0, 10, 20, 30, 15],
+    blizzard:  [180, 190, 200, 210, 220, 200],
+    solarflare:[25, 35, 45, 15, 5],
+    spectral:  [120, 160, 200, 240, 280, 320, 360],
+    prism:     [0, 60, 120, 200, 280, 340],
+    twilight:  [15, 300, 240, 220],
+    lava:      [50, 30, 10, 0],
+    reef:      [180, 160, 210, 260],
+    venomous:  [90, 110, 140, 170],
   };
 
   // -----------------------------------------------------------------
@@ -387,6 +405,91 @@
       "ctx.stroke(); ctx.restore();",
     ],
   };
+  // -----------------------------------------------------------------
+  //  Extension shapes (v2.1) — added to the export library so that
+  //  standalone snippets can render page 9/10 effects faithfully.
+  //  Each body matches the logic in fx-engine-ext.js but is inlined
+  //  without any engine helper dependencies.
+  // -----------------------------------------------------------------
+  SHAPES.beam = [
+    "var a = 1 - p.age / p.life;",
+    "var len = " + JSON.stringify(0) + "; len = (CFG.beamLen || 14);",
+    "var tx = p.tx || Math.cos(p.angle||0), ty = p.ty || Math.sin(p.angle||0);",
+    "var x1 = p.x - tx*len*0.5, y1 = p.y - ty*len*0.5;",
+    "var x2 = p.x + tx*len*0.5, y2 = p.y + ty*len*0.5;",
+    "var g = ctx.createLinearGradient(x1,y1,x2,y2);",
+    "g.addColorStop(0,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,0)');",
+    "g.addColorStop(0.5,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,'+a+')');",
+    "g.addColorStop(1,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,0)');",
+    "ctx.strokeStyle = g; ctx.lineWidth = CFG.beamWidth || 2; ctx.lineCap='round';",
+    "ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();",
+  ];
+  SHAPES.bokeh = [
+    "var a = 1 - p.age / p.life;",
+    "var r = p.size * 1.4;",
+    "var g = ctx.createRadialGradient(p.x,p.y,r*0.6,p.x,p.y,r);",
+    "g.addColorStop(0,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,'+(a*0.35)+')');",
+    "g.addColorStop(0.9,'hsla('+p.hue+','+p.sat+'%,'+(Math.min(p.lit+10,90))+'%,'+(a*0.9)+')');",
+    "g.addColorStop(1,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,0)');",
+    "ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,TAU); ctx.fill();",
+  ];
+  SHAPES.orb = [
+    "var a = 1 - p.age / p.life;",
+    "var r = p.size;",
+    "var g = ctx.createRadialGradient(p.x-r*0.4,p.y-r*0.4,0,p.x,p.y,r);",
+    "g.addColorStop(0,'hsla('+p.hue+','+p.sat+'%,95%,'+a+')');",
+    "g.addColorStop(0.45,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,'+a+')');",
+    "g.addColorStop(1,'hsla('+p.hue+','+p.sat+'%,'+Math.max(p.lit-30,10)+'%,'+(a*0.6)+')');",
+    "ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,TAU); ctx.fill();",
+  ];
+  SHAPES.plasmoid = [
+    "var a = 1 - p.age / p.life;",
+    "var r = p.size * (0.8 + 0.2*Math.sin((p.phase||0)*6));",
+    "var g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*1.8);",
+    "g.addColorStop(0,'hsla('+p.hue+',100%,85%,'+a+')');",
+    "g.addColorStop(0.5,'hsla('+p.hue+',100%,60%,'+(a*0.55)+')');",
+    "g.addColorStop(1,'hsla('+p.hue+',100%,40%,0)');",
+    "ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,r*1.8,0,TAU); ctx.fill();",
+  ];
+  SHAPES.nebula = [
+    "var a = 1 - p.age / p.life;",
+    "var r = p.size * 2.2;",
+    "var g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);",
+    "g.addColorStop(0,'hsla('+p.hue+',100%,75%,'+(a*0.7)+')');",
+    "g.addColorStop(0.4,'hsla('+(p.hue+40)+',100%,55%,'+(a*0.4)+')');",
+    "g.addColorStop(0.8,'hsla('+(p.hue-30)+',80%,35%,'+(a*0.2)+')');",
+    "g.addColorStop(1,'hsla('+p.hue+',100%,70%,0)');",
+    "ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,TAU); ctx.fill();",
+  ];
+  SHAPES.ripple3 = [
+    "var a = 1 - p.age / p.life;",
+    "var r = p.size;",
+    "ctx.strokeStyle = 'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,'+a+')';",
+    "ctx.lineWidth = CFG.lineWidth || 0.9;",
+    "for (var i=0;i<3;i++){ var rr = r*(1-i*0.28); if (rr>0){ ctx.beginPath(); ctx.arc(p.x,p.y,rr,0,TAU); ctx.stroke(); } }",
+  ];
+  SHAPES.gridcell = [
+    "var a = 1 - p.age / p.life;",
+    "var r = p.size;",
+    "ctx.strokeStyle = 'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,'+a+')';",
+    "ctx.lineWidth = CFG.lineWidth || 1;",
+    "var s = Math.round(r*2); ctx.strokeRect(Math.round(p.x-r),Math.round(p.y-r),s,s);",
+  ];
+  SHAPES.comet = [
+    "var a = 1 - p.age / p.life;",
+    "var r = p.size;",
+    "var len = r * (CFG.tailLen || 5);",
+    "var tx = p.tx || Math.cos(p.angle||0), ty = p.ty || Math.sin(p.angle||0);",
+    "var tailX = p.x - tx*len, tailY = p.y - ty*len;",
+    "var g = ctx.createLinearGradient(p.x,p.y,tailX,tailY);",
+    "g.addColorStop(0,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,'+a+')');",
+    "g.addColorStop(1,'hsla('+p.hue+','+p.sat+'%,'+p.lit+'%,0)');",
+    "ctx.strokeStyle = g; ctx.lineWidth = r*1.2; ctx.lineCap='round';",
+    "ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(tailX,tailY); ctx.stroke();",
+    "ctx.fillStyle = 'hsla('+p.hue+',100%,90%,'+a+')';",
+    "ctx.beginPath(); ctx.arc(p.x,p.y,r*0.7,0,TAU); ctx.fill();",
+  ];
+
   const DEFAULT_SHAPE = "glow";
 
   // -----------------------------------------------------------------
@@ -956,7 +1059,7 @@
       " *  ---------------------------------------------------------",
       " *  USAGE:",
       " *    1. Add class=\"fx-" + slug + "\" to any element:",
-      " *         <div class=\"fx-" + slug + "\" style=\"width:200px;height:200px\"></div>",
+      " *         <div class=\"fx-" + slug + "\" style=\"background:black;width:200px;height:200px\"></div>",
       " *    2. Paste this entire snippet once (anywhere on the page).",
       " *",
       " *  The effect auto-attaches to every matching element present",
@@ -1035,6 +1138,15 @@
       if (!cssRules) continue;
       for (let ri = 0; ri < cssRules.length; ri++) {
         collectRule(cssRules[ri], rules, keyframes, selPrefix, slug, pad);
+      }
+    }
+
+    // Fallback: when running from file:// every linked CSS is treated as a
+    // foreign origin and `.cssRules` throws.  Parse the pre-baked CSS
+    // database (js/fx-css-db.js) instead.
+    if (!rules.length && !keyframes.length && window.FX_CSS_DB && Array.isArray(window.FX_CSS_DB.texts)) {
+      for (const text of window.FX_CSS_DB.texts) {
+        collectFromText(text, rules, keyframes, selPrefix, slug, pad);
       }
     }
 
@@ -1144,6 +1256,84 @@
     const after = selector[idx + selPrefix.length];
     if (after && /[A-Za-z0-9_-]/.test(after)) return false;
     return true;
+  }
+
+  // -----------------------------------------------------------------
+  //  Text-based CSS parser — used when `sheet.cssRules` is blocked
+  //  (e.g. page opened via file://).  Walks the raw text top-level-
+  //  brace by top-level-brace, collecting `.bNN` rules and `@keyframes
+  //  bNN` blocks.  Comments and string literals are honoured so `{`/`}`
+  //  inside them don't confuse the depth counter.
+  // -----------------------------------------------------------------
+  function collectFromText(css, rules, keyframes, selPrefix, slug, pad) {
+    const blocks = parseTopLevelBlocks(css);
+    const animName = "b" + pad;
+    for (const b of blocks) {
+      const head = b.head.trim();
+      // @keyframes bNN (or vendor prefix)
+      const kfMatch = /^@(?:-[a-z]+-)?keyframes\s+([^\s{]+)/i.exec(head);
+      if (kfMatch) {
+        if (kfMatch[1] === animName) keyframes.push(b.full);
+        continue;
+      }
+      if (head.startsWith("@")) continue; // skip other at-rules for now
+      // Style rule: filter selectors list for `.bNN` token matches.
+      const sels = head.split(",").map(s => s.trim()).filter(Boolean);
+      const matched = sels.filter(s => matchesSelector(s, selPrefix));
+      if (!matched.length) continue;
+      const renamed = matched.map(s => renameSelector(s, selPrefix, ".fx-" + slug));
+      rules.push(renamed.join(",\n") + " {" + b.body + "}");
+    }
+  }
+
+  // Brace-balanced top-level parser that respects /* … */ comments and
+  // 'single' / "double" strings.  Returns [{ head, body, full }].
+  function parseTopLevelBlocks(css) {
+    const out = [];
+    let i = 0, n = css.length;
+    while (i < n) {
+      // Skip whitespace
+      while (i < n && /\s/.test(css[i])) i++;
+      // Skip block comment
+      if (i < n - 1 && css[i] === "/" && css[i + 1] === "*") {
+        const end = css.indexOf("*/", i + 2);
+        i = end < 0 ? n : end + 2;
+        continue;
+      }
+      if (i >= n) break;
+      // Head: read until unquoted/uncommented '{'
+      const headStart = i;
+      while (i < n && css[i] !== "{") {
+        if (css[i] === "/" && css[i + 1] === "*") {
+          const end = css.indexOf("*/", i + 2);
+          i = end < 0 ? n : end + 2; continue;
+        }
+        if (css[i] === '"' || css[i] === "'") {
+          const q = css[i++]; while (i < n && css[i] !== q) { if (css[i] === "\\") i++; i++; } i++; continue;
+        }
+        i++;
+      }
+      if (i >= n) break;
+      const head = css.slice(headStart, i);
+      i++; // consume '{'
+      const bodyStart = i;
+      let depth = 1;
+      while (i < n && depth > 0) {
+        if (css[i] === "/" && css[i + 1] === "*") {
+          const end = css.indexOf("*/", i + 2);
+          i = end < 0 ? n : end + 2; continue;
+        }
+        if (css[i] === '"' || css[i] === "'") {
+          const q = css[i++]; while (i < n && css[i] !== q) { if (css[i] === "\\") i++; i++; } i++; continue;
+        }
+        if (css[i] === "{") depth++;
+        else if (css[i] === "}") depth--;
+        i++;
+      }
+      const body = css.slice(bodyStart, i - 1);
+      out.push({ head, body, full: css.slice(headStart, i) });
+    }
+    return out;
   }
 
   function renameSelector(selector, selPrefix, replacement) {

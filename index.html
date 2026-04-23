@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AAA Game Studio Animated Borders — 325 Effects</title>
+<title>AAA Game Studio Animated Borders — 625 Effects</title>
 <link rel="stylesheet" href="css/base.css" />
 <link rel="stylesheet" href="css/nav.css" />
 <link rel="stylesheet" href="css/modal.css" />
@@ -14,12 +14,13 @@
 <link rel="stylesheet" href="css/borders-41-50.css" />
 <link rel="stylesheet" href="css/borders-51-100.css" />
 <link rel="stylesheet" href="css/borders-101-150.css" />
+<link rel="stylesheet" href="css/borders-326-425.css" />
 </head>
 <body>
 <header class="site-header">
   <h1>AAA Game Studio — Animated Border Showcase</h1>
-  <p class="subtitle">325 cinematic border effects across 7 pages. Page 7 showcases the v2 FX engine.</p>
-  <input id="search" type="search" placeholder="Filter effects by name…" />
+  <p class="subtitle">625 cinematic border effects across 13 pages. Pages 8–10 showcase v2.1: 100 new CSS borders and 200 new canvas effects.</p>
+  <input id="search" type="search" placeholder="Filter effects by name across all pages…" />
 </header>
 
 <main id="grid" class="grid">
@@ -42,21 +43,28 @@
 <script src="js/trail.js"></script>
 <script src="js/trail-ring.js"></script>
 
-<!-- FX-ENGINE v2 — single-file build (concatenation of js/fx/*.js).
-     Swap back to the individual modules for development; this single
-     file is what ships to end users. -->
+<!-- FX-ENGINE v2 — single-file build (concatenation of js/fx/*.js). -->
 <script src="Max_FX_Engine.js"></script>
 
+<!-- FX-ENGINE v2.1 EXTENSIONS — new shapes/forces/palettes/ramps.
+     Must load AFTER the base engine and BEFORE any page that uses them. -->
+<script src="js/fx-engine-ext.js"></script>
+
 <!-- Effect catalogues.  Page 1 (1-50) is CSS-rendered via the
-     borders-*.css files; pages 2-7 are FX-engine-fueled. -->
+     borders-*.css files; pages 2-7 are FX-engine-fueled; page 8 is
+     CSS (326-425); pages 9-10 are new v2.1 canvas effects. -->
 <script src="js/fx-page-02.js"></script>
 <script src="js/fx-page-03.js"></script>
 <script src="js/fx-page-04.js"></script>
 <script src="js/fx-page-05.js"></script>
 <script src="js/fx-page-06.js"></script>
 <script src="js/fx-page-07.js"></script>
+<script src="js/fx-page-08.js"></script>
+<script src="js/fx-page-09.js"></script>
+<script src="js/fx-page-10.js"></script>
 
 <script src="js/app.js"></script>
+<script src="js/fx-css-db.js"></script>
 <script src="js/fx-export.js"></script>
 <script src="js/modal.js"></script>
 </body>
